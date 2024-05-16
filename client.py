@@ -1,50 +1,41 @@
 import base64
 import os
-import openai
-
+from openai import AsyncOpenAI
 
 class Client:
-    chat = openai.ChatCompletion()
-    model: str = "gpt-3.5-turbo"
+    client = AsyncOpenAI(api_key="", base_url="https://api.deepseek.com")
+    model: str = "deepseek-chat"
     conversation: str = ""
     messages: list = []
-    max_tokens: int = 1000
+    max_tokens: int = 4096
+    
+    def __init__(self, api_key="", base_url="https://api.deepseek.com", model="deepseek-chat", max_tokens=4096):
+        self.client.api_key = api_key
 
-
-    def __init__(self, api_key="", model="gpt-3.5-turbo", max_tokens=1000, proxy="", api_base="", api_type="open_ai", api_version=""):
-        self.chat.api_key = api_key
-
-        if proxy.strip() != "":
-            openai.proxy = {'http': proxy}
-        if api_base.strip() != "":
-            openai.verify_ssl_certs = False
-            openai.api_base = api_base
-        if api_version.strip() != "":
-            openai.api_version = api_version
-        openai.api_type = api_type
+        if base_url.strip() != "":
+            self.client.base_url = base_url
         self.model = model
         self.max_tokens = max_tokens
         self.conversation = "default"
         self.messages = [
             {"role": "system", "content": "你是一个AI助手"},
         ]
-
+        
     def load_conversation(self, conversation, message):
         self.conversation = conversation
         self.messages = message
 
     async def send(self, message, record=True):
-        openai.api_key = self.chat.api_key
         self.messages.append({"role": "user", "content": message})
         try:
-            response = await self.chat.acreate(
+            response = await self.client.chat.completions.create(
                 model=self.model,
-                engine=self.model if openai.api_type == "azure" else None,
                 messages=self.messages,
                 max_tokens=self.max_tokens,
-                timeout=30
+                timeout=30,
+                stream=False
             )
-            if response.choices[0]['finish_reason'] == "content_filter":
+            if response.choices[0].finish_reason == "content_filter":
                 self.messages = self.messages[:-1]
                 return "由于敏感内容被过滤，未返回消息"
             msg = response.choices[0].message.content.strip()
@@ -54,9 +45,8 @@ class Client:
                 self.messages = self.messages[:-1]
 
             #token过长删除最早两条对话
-            if response['usage']['total_tokens'] > 3800 - self.max_tokens:
+            if response.usage.total_tokens > 3800 - self.max_tokens:
                 del self.messages[1:5]
-
             return msg.strip()
         except Exception as e:
             self.messages = self.messages[:-1]
