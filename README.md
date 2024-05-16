@@ -1,12 +1,12 @@
 > #### https://github.com/Cosmos01/aichat-chatGPT/tree/main的fork
 > #### 发现一个国产AI:[DeepSeek](https://www.deepseek.com/)看上去很强很便宜，但是旧插件没法直接用了
 > #### 旧版本用的openai0.28，现在openai1.30，于是修改了一下让它能用deepseek
-> #### 注册送5百万tokens(一个月期限)
+> #### 注册白嫖5百万tokens(一个月期限)
 ------
   
 # aichat-DeepSeek
   
-aichat插件魔改GPT-3.5 API版本  的DeepSeek适配版，国产ai所以删除了代理
+aichat插件魔改GPT-3.5 API版本的DeepSeek适配版，国产ai所以删除了代理
   
 ## 命令(人格可换成会话)
 1. `创建人格/新建人格/设置人格+人格名+空格+设定`: 创建新人格或修改现有人格，注意人格名不能大于24位
@@ -48,5 +48,5 @@ aichat插件魔改GPT-3.5 API版本  的DeepSeek适配版，国产ai所以删除
 
 <br><br><br><br><br><br><br><br>
 ------  
-其他请参考原帖，感谢原作者，大部分都是原作者做的。
+其他请参考原帖，感谢原作者，我根本不会写，大部分代码都是原作者的。
 
