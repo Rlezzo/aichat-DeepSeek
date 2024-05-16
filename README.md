@@ -33,7 +33,7 @@ aichat插件魔改GPT-3.5 API版本的DeepSeek适配版，国产ai所以删除�
 
 ## 配置参数(填写时不要加引号)
 - api-key
-> 可以填写多个api-key，半角逗号(",")隔开，每次对话随机选择
+> 可以填写多个api-key，半角逗号(",")隔开，每次对话随机选择[基本上填一个apikey就能用了]
 - model 模型
 > 默认"deepseek-chat"，目前有 deepseek-chat 和 deepseek-coder两种
 - record 记忆开关
@@ -45,7 +45,7 @@ aichat插件魔改GPT-3.5 API版本的DeepSeek适配版，国产ai所以删除�
 - base_url API地址
 > 需要修改API地址的填写，默认的就是deepseek的
 
-
+## 注意，因为是国产ai所以非常和谐，原插件那种露骨的人格设定用不了，比较普通的那种设定可用（普通和理所当然到底是什么呢
 <br><br><br><br><br><br><br><br>
 ------  
 其他请参考原帖，感谢原作者，我根本不会写，大部分代码都是原作者的。
