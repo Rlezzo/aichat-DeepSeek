@@ -34,12 +34,9 @@ async def get_config(bot, ev):
 def create_client(group_id):
     client = Client(
         random.choice(config.api_keys),
+        config.base_url,
         config.model,
         config.max_tokens,
-        config.proxy,
-        config.api_base,
-        config.api_type,
-        config.api_version
     )
     conversation = "default"
     if group_id in config.groups:
@@ -51,19 +48,17 @@ def create_client(group_id):
     group_clients[group_id] = client
     return
 
-
 async def get_chat_response(group_id, prompt):
     group_id = str(group_id)
     record = config.record
     if not record and prompt.startswith("记住"):
-        # prompt = prompt.removeprefix("记住")
         prompt = prompt[2:]
         record = True
     api_key = random.choice(config.api_keys)
     if group_id not in group_clients:
         create_client(group_id)
     client: Client = group_clients[group_id]
-    client.chat.api_key = api_key
+    client.api_key = api_key
     try:
         msg = await client.send(prompt, record)
         if record:
@@ -80,7 +75,6 @@ async def get_chat_response(group_id, prompt):
         err = str(e) if len(str(e)) < 133 else str(e)[:133]
         return f"发生错误: {err}"
 
-
 @sv.on_message('group')
 async def ai_reply(bot, context):
     msg = str(context['message'])
@@ -95,7 +89,6 @@ async def ai_reply(bot, context):
         except Exception as err:
             print(err)
 
-
 @sv.on_prefix('/t')
 async def ai_reply_prefix(bot, ev: CQEvent):
     text = str(ev.message.extract_plain_text()).strip()
@@ -107,7 +100,6 @@ async def ai_reply_prefix(bot, ev: CQEvent):
             await bot.send(ev, msg)
     except Exception as err:
         print(err)
-
 
 @sv.on_prefix(('新建人格', '创建人格', '新建会话', '创建会话', '设置人格', '设置会话'))
 async def set_conversation(bot, ev: CQEvent):
@@ -127,7 +119,6 @@ async def set_conversation(bot, ev: CQEvent):
         group_clients[str(ev.group_id)].conversation = name
         group_clients[str(ev.group_id)].messages = msg
     await bot.send(ev, f"{name}创建完成")
-
 
 @sv.on_prefix(('删除人格', '删除会话'))
 async def delete_conversation(bot, ev: CQEvent):
@@ -151,14 +142,12 @@ async def delete_conversation(bot, ev: CQEvent):
     config.save_conversations()
     await bot.send(ev, f"{name}删除成功")
 
-
 def save_data(group_id, conversation, messages):
     global config
     config.conversations[conversation] = messages
     config.groups[str(group_id)] = conversation
     config.save_conversations()
     config.save_config()
-
 
 @sv.on_prefix(('选择人格', '选择会话', '切换人格', '切换会话', '默认人格', '默认会话'))
 async def change_conversation(bot, ev: CQEvent):
@@ -177,7 +166,6 @@ async def change_conversation(bot, ev: CQEvent):
     else:
         await bot.send(ev, "此人格不存在，可以使用`人格列表`命令获取现有人格。")
 
-
 @sv.on_fullmatch(('查询人格', '获取人格', '人格列表', '会话列表', '获取会话', '查询会话'))
 async def list_conversation(bot, ev: CQEvent):
     group_id = str(ev.group_id)
@@ -186,7 +174,6 @@ async def list_conversation(bot, ev: CQEvent):
     for k in config.conversations:
         msg += f"{k}、"
     await bot.send(ev, msg.strip("、"))
-
 
 @sv.on_prefix(('重置人格', '重置会话'))
 async def reset_conversation(bot, ev: CQEvent):
@@ -204,7 +191,6 @@ async def reset_conversation(bot, ev: CQEvent):
             if client.conversation == name:
                 client.messages = config.conversations[name]
         await bot.send(ev, "重置成功")
-
 
 @sv.on_prefix('删除对话')
 async def del_msg(bot, ev: CQEvent):
@@ -241,7 +227,6 @@ async def del_msg(bot, ev: CQEvent):
         await bot.send(ev, "删除成功")
     else:
         await bot.send(ev, f"最多只能删除{str(int(m / 2) - 1)}条对话")
-
 
 @sv.on_prefix('对话记忆')
 async def set_record(bot, ev: CQEvent):
