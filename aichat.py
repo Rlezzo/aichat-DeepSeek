@@ -15,6 +15,7 @@ help_text = """命令(人格可以替换为会话)
 7. `删除会话+会话名` : 删除会话，不填则删除当前会话，默认会话不可删除
 8. `删除对话+条数`: 删除倒数N条对话，负数则是从第N条开始删除，不加条数则删除上一条。1条对话指一次问与答，不需要乘2。
 9. `ai配置重载`: 重新加载配置文件，更新key等配置后使用
+10.`查看模型/查询模型/更改模型/切换模型` 查看切换api所用模型
 """
 
 sv = Service('人工智障', enable_on_default=False, help_=help_text)
@@ -30,6 +31,7 @@ count = 0
 async def get_config(bot, ev):
     global config
     config = Config()
+    await bot.send(ev,"已重载AI配置")
 
 def create_client(group_id):
     client = Client(
@@ -47,6 +49,47 @@ def create_client(group_id):
     client.messages = config.conversations[client.conversation]
     group_clients[group_id] = client
     return
+
+# 新增获取deepseek模型列表
+async def fetch_and_get_models(client):
+    model_ids = []
+    models_paginator = client.models.list()
+    async for model in models_paginator:
+        model_ids.append(model.id)
+    return model_ids
+# 查看当前api有的模型列表
+@sv.on_fullmatch(('查询model', '模型列表', '查询模型列表', '查询模型', 'ai模型', 'AI模型'))
+async def ai_get_models(bot, ev: CQEvent):
+    group_id = str(ev.group_id)
+    if group_id not in group_clients:
+        create_client(group_id)
+    client: Client = group_clients[group_id]
+    msg = "现在的模型有："
+    try:
+        model_list = await fetch_and_get_models(client.client)
+        for model in model_list:
+            msg += f" \"{str(model)}\" "
+    except Exception as err:
+        print(err)
+        await bot.finish(ev, "模型查找失败")
+    await bot.send(ev, msg)
+
+# 切换ai模型
+@sv.on_prefix(('切换模型', '更改模型', '设置模型'))
+async def set_ai_model(bot, ev: CQEvent):
+    group_id = str(ev.group_id)
+    if group_id not in group_clients:
+        create_client(group_id)
+    client: Client = group_clients[group_id]
+    model_list = await fetch_and_get_models(client.client)
+    # 模型名称
+    name = str(ev.message.extract_plain_text()).strip()
+    if name == "":
+        await bot.finish(ev, "请发送\"切换模型 + 模型名称\"，可用\"查询模型\"命令查看可用模型")
+    elif name in model_list:
+        client.model = name
+        await bot.finish(ev, f"模型现已设置为：{name}")
+    await bot.send(ev, "切换模型失败！未找到该模型")
 
 async def get_chat_response(group_id, prompt):
     group_id = str(group_id)
