@@ -23,12 +23,13 @@
   
   
 ## 安装方法
-1. 在HoshinoBot的插件目录modules下clone**分支**remake `git clone -b remake https://github.com/Rlezzo/aichat-DeepSeek.git aichat`
+1. 在HoshinoBot的插件目录modules下clone**分支**remake
+`git clone -b remake https://github.com/Rlezzo/aichat-DeepSeek.git aichat`
 2. 安装必要第三方库：`pip install openai`（当前是1.35版本）
 3. 在 `config/__bot__.py`的MODULES_ON列表里加入 `aichat`
-5. 重启HoshinoBot
-6. 插件默认启用
-7. 填写配置文件
+4. 重启HoshinoBot
+5. 插件默认启用
+6. 填写配置文件
 
 ## 配置参数
 程序会自动生成4个json文件
