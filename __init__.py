@@ -1,5 +1,5 @@
 import re
-from hoshino import Service, logger
+from hoshino import Service, logger, priv
 from hoshino.typing import CQEvent
 from nonebot.message import Message
 from .conversation_manager import ConversationManager
