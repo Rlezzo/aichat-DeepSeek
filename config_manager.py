@@ -34,10 +34,10 @@ class ConfigManager:
                 }
             },
             "default_settings": {
+
                 "record": True,
                 "proxy": "http://127.0.0.1:7890",
                 "proxy_on": False,
-                "interval": 5,
                 "max_tokens": 512,
                 "temperature": 1.0,
                 "timeout": 30
@@ -65,7 +65,7 @@ class ConfigManager:
 
     def apply_default_settings(self, config, provider):
         default_settings = self.options["default_settings"]
-        for key in ["proxy", "proxy_on", "interval", "max_tokens", "record", "temperature", "timeout"]:
+        for key in ["proxy", "proxy_on", "max_tokens", "record", "temperature", "timeout"]:
             config[key] = default_settings[key]
 
         provider_options = self.options["api_providers"][provider]
